@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FirebaseMultiAccountLogin</string>
     <string name="facebook_app_id">1309047229179865</string>
+    <string name="user_exists">An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.</string>
 </resources>

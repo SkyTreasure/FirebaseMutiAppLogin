@@ -1,48 +1,80 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.skytreasure.firebasemultiaccountlogin.ui.SignInWithEmailActivity">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="368dp"
+        android:layout_height="495dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="8dp">
+
+        <EditText
+            android:id="@+id/et_email"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Email"
+            android:inputType="textEmailAddress" />
 
-            <EditText
-                android:id="@+id/et_email"
-                android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/et_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:hint="Password"
+            android:inputType="textPassword" />
+
+
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Login" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:text="Register"
+            android:id="@+id/btn_register"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:id="@+id/tv_forgot_password"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:layout_alignParentStart="true"
+                android:padding="4dp"
+                android:text="Click to reset password!"
+                android:textColor="@color/red" />
 
-            <EditText
-                android:id="@+id/et_pwd"
-                android:layout_width="match_parent"
+
+            <TextView
+                android:id="@+id/tv_reset_password"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:hint="Password" />
+                android:layout_alignParentEnd="true"
+                android:padding="4dp"
+                android:visibility="invisible"
+                android:text="Reset Password"
+                android:textColor="@color/greyish_brown" />
+
+        </RelativeLayout>
 
 
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="LOGIN" />
-
-
-        </LinearLayout>
-
-    </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 
 </layout>

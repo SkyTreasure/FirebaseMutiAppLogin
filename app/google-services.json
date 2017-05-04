@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "873417243867",
+    "firebase_url": "https://fir-multiaccountlogin-96001.firebaseio.com",
+    "project_id": "fir-multiaccountlogin-96001",
+    "storage_bucket": "fir-multiaccountlogin-96001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873417243867:android:66de5842c332c2fd",
+        "android_client_info": {
+          "package_name": "com.skytreasure.firebasemultiaccountlogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873417243867-6ri3rl1319rsp6qpe5t3ha8t36fmvbql.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skytreasure.firebasemultiaccountlogin",
+            "certificate_hash": "9270f655e071e4efbddc0eeeae2e3df6ddd34209"
+          }
+        },
+        {
+          "client_id": "873417243867-g0n3l1ljmlrcn1rub8jc5sbe1gohteti.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnimyDANYFdsA2yJcBmXfsSrOuYxDOc5k"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873417243867-g0n3l1ljmlrcn1rub8jc5sbe1gohteti.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

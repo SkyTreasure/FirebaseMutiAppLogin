@@ -27,6 +27,10 @@
         </activity>
         <activity android:name=".ui.ProfileActivity" />
         <activity android:name=".ui.SignInWithEmailActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c239335da459206ac2d160b3b0ed717b9890ea6d" />
     </application>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

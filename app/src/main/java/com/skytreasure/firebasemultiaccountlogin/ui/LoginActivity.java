@@ -32,11 +32,29 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.TwitterAuthProvider;
 import com.skytreasure.firebasemultiaccountlogin.R;
 import com.skytreasure.firebasemultiaccountlogin.databinding.ActivityLoginBinding;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
+
+import io.fabric.sdk.android.Fabric;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "Put your key here";
+    private static final String TWITTER_SECRET = "Put ur secret key here";
+
+    //YxG54ztvLYddYRlbJ50tbLQYj- key
+    //fSrp27LedQXGdrMUEbPc8Tzan5sDTeem2jmC8hRUKRFQX4iL0O -secret
+
 
     ActivityLoginBinding mBinding;
 
@@ -52,12 +70,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     //For Facebook Login
     private CallbackManager mCallbackManager;
 
-    private FirebaseUser prevUser,currentUser;
+
+    private FirebaseUser prevUser, currentUser;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
@@ -67,6 +88,25 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         setupGoogleSignIn();
         setupFacebookSignIn();
+        setupTwitterSignIn();
+    }
+
+    private void setupTwitterSignIn() {
+        mBinding.tlbTwiiter.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                Log.d(TAG, "twitterLogin:success" + result);
+                handleTwitterSession(result.data);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                Log.w(TAG, "twitterLogin:failure", exception);
+                Toast.makeText(LoginActivity.this, "Twitter failure.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -77,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     private void setupFacebookSignIn() {
-        FacebookSdk.sdkInitialize(this );
+        FacebookSdk.sdkInitialize(this);
         mCallbackManager = CallbackManager.Factory.create();
         mBinding.lbFb.setReadPermissions("email", "public_profile");
         mBinding.lbFb.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -140,9 +180,12 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Toast.makeText(LoginActivity.this, "Authentication failed.",
                         Toast.LENGTH_SHORT).show();
             }
-        }else{
+        } else {
             //Facebook
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
+            //Twitter
+            mBinding.tlbTwiiter.onActivityResult(requestCode, resultCode, data);
+
         }
     }
 
@@ -183,6 +226,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Get an  token for the signed-in user, exchange it for a Firebase credential,
      * and authenticate with Firebase using the Firebase credential
+     *
      * @param acct
      */
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
@@ -197,17 +241,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            currentUser=user;
-                            Toast.makeText(LoginActivity.this, "Success:"+user.getUid(),
+                            currentUser = user;
+                            Toast.makeText(LoginActivity.this, "Success:" + user.getUid(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if(task.getException().getMessage().equals(getString(R.string.user_exists))){
+                            if (task.getException().getMessage().equals(getString(R.string.user_exists))) {
                                 prevUser = currentUser;
 
                                 linkWithExistingUser(credential);
-                            }else{
+                            } else {
                                 Toast.makeText(LoginActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             }
@@ -221,6 +265,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     /**
      * Get an access token for the signed-in user, exchange it for a Firebase credential,
      * and authenticate with Firebase using the Firebase credential
+     *
      * @param token
      */
     private void handleFacebookAccessToken(AccessToken token) {
@@ -237,16 +282,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Log.d(TAG, "signInWithCredential:success");
 
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(LoginActivity.this, "Success:"+ user.getUid(),
+                            Toast.makeText(LoginActivity.this, "Success:" + user.getUid(),
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             prevUser = currentUser;
-                            if(task.getException().getMessage().equals(getString(R.string.user_exists))){
+                            if (task.getException().getMessage().equals(getString(R.string.user_exists))) {
                                 linkWithExistingUser(credential);
-                            }else{
-                                Toast.makeText(LoginActivity.this, "Authentication failed."+ task.getException().getMessage(),
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Authentication failed." + task.getException().getMessage(),
                                         Toast.LENGTH_SHORT).show();
                             }
 
@@ -259,11 +304,47 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     /**
      *
+     */
+    private void handleTwitterSession(TwitterSession session) {
+        Log.d(TAG, "handleTwitterSession:" + session);
+
+        final AuthCredential credential = TwitterAuthProvider.getCredential(
+                session.getAuthToken().token,
+                session.getAuthToken().secret);
+
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(LoginActivity.this, "Authentication Success." ,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            prevUser = currentUser;
+
+                            if (task.getException().getMessage().equals(getString(R.string.user_exists))) {
+                                linkWithExistingUser(credential);
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Authentication failed." + task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }
+                });
+    }
+
+    /**
      * @param credential
      */
-    private void linkWithExistingUser(AuthCredential credential){
-        if(mAuth==null){
-            mAuth=FirebaseAuth.getInstance();
+    private void linkWithExistingUser(AuthCredential credential) {
+        if (mAuth == null) {
+            mAuth = FirebaseAuth.getInstance();
         }
         prevUser.linkWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

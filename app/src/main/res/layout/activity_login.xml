@@ -26,8 +26,16 @@
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/lb_fb"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="16dp"/>
+
+            <com.twitter.sdk.android.core.identity.TwitterLoginButton
+                android:id="@+id/tlb_twiiter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
 
         </LinearLayout>

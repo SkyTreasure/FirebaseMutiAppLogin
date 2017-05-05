@@ -1,14 +1,14 @@
 # FirebaseMutiAppLogin
-Firebase Authentication using email/password, facebook, twitter, github<br/><br/>
+Firebase Authentication using email/password, facebook, twitter, github
 
 <h1>Facebook:</h1>
-<p>Create the app in facebook developer site and then proceed.</p><br/><br/>
+<p>Create the app in facebook developer site and then proceed.</p>
 
 <h1>Twitter</h1>
-<p>Added twitter sdk using fabric.</p><br/><br/>
+<p>Added twitter sdk using fabric. Replace the keys in the LoginActivity. Note: Twitter login doesn't return email so you can't link it to any accounts. Where as you can link facebook, google, github account to same user in firebase if all those account has same email id.</p>
 
 <h1>Github</h1>
-<p>Create github app here https://github.com/settings/applications/new and then proceed.</p><br/><br/>
+<p>Create github app here https://github.com/settings/applications/new and then proceed.</p>
 
 
 

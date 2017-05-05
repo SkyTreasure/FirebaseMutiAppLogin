@@ -1,8 +1,10 @@
 package com.skytreasure.firebasemultiaccountlogin.ui;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,10 +33,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GithubAuthProvider;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.TwitterAuthProvider;
 import com.skytreasure.firebasemultiaccountlogin.R;
 import com.skytreasure.firebasemultiaccountlogin.databinding.ActivityLoginBinding;
+import com.skytreasure.firebasemultiaccountlogin.github.GithubApp;
+import com.skytreasure.firebasemultiaccountlogin.github.GithubSession;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -55,6 +60,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     //YxG54ztvLYddYRlbJ50tbLQYj- key
     //fSrp27LedQXGdrMUEbPc8Tzan5sDTeem2jmC8hRUKRFQX4iL0O -secret
 
+    //https://github.com/settings/applications/new
+
 
     ActivityLoginBinding mBinding;
 
@@ -69,6 +76,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     //For Facebook Login
     private CallbackManager mCallbackManager;
+
+    //For Github Login
+    public static final String GIT_CLIENT_ID = "b30ca05c3eba5b651df3";
+    public static final String GIT_CLIENT_SECRET = "84c43219df3e9173f8bbe2b0f0b1da882846d055";
+    public static final String GIT_CALLBACK_URL = "https://fir-multiaccountlogin-96001.firebaseapp.com/__/auth/handler";
+    private GithubApp mApp;
+    private String mGithubAccessToken="";
 
 
     private FirebaseUser prevUser, currentUser;
@@ -85,10 +99,20 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         mBinding.btnEmailPassword.setOnClickListener(this);
         mBinding.btnGoogle.setOnClickListener(this);
+        mBinding.btnGithub.setOnClickListener(this);
 
         setupGoogleSignIn();
         setupFacebookSignIn();
         setupTwitterSignIn();
+        setupGithubSignIn();
+    }
+
+    private void setupGithubSignIn() {
+        mApp = new GithubApp(this, GIT_CLIENT_ID,
+                GIT_CLIENT_SECRET, GIT_CALLBACK_URL);
+        mApp.setListener(listener);
+
+
     }
 
     private void setupTwitterSignIn() {
@@ -302,6 +326,33 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
 
+    private void handleGithubAccessToken(String token){
+        final AuthCredential credential = GithubAuthProvider.getCredential(token);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            prevUser = currentUser;
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            if (task.getException().getMessage().equals(getString(R.string.user_exists))) {
+                                linkWithExistingUser(credential);
+                            }
+                        }else{
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(LoginActivity.this, "Success Github login.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+    }
+
     /**
      *
      */
@@ -375,11 +426,69 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             case R.id.btn_google:
                 GooglesignIn();
                 break;
+            case R.id.btn_github:
+                GitHubSignIn();
+                break;
         }
     }
+
+    private void GitHubSignIn() {
+        if (mApp.hasAccessToken()) {
+            setupGithubSignIn();
+            mApp.authorize();
+
+           // handleGithubAccessToken(mApp.getAccessToken());
+          /*  final AlertDialog.Builder builder = new AlertDialog.Builder(
+                    LoginActivity.this);
+            builder.setMessage("Disconnect from GitHub?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(
+                                        DialogInterface dialog, int id) {
+                                    mApp.resetAccessToken();
+//                                            login.setText("Connect");
+                                }
+                            })
+                    .setNegativeButton("No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(
+                                        DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+            final AlertDialog alert = builder.create();
+            alert.show();*/
+        } else {
+            mApp.authorize();
+        }
+    }
+
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+
+    GithubApp.OAuthAuthenticationListener listener = new GithubApp.OAuthAuthenticationListener() {
+
+        @Override
+        public void onSuccess() {
+            mGithubAccessToken= mApp.getAccessToken();
+            Toast.makeText(LoginActivity.this, "Github Success: "+mGithubAccessToken ,
+                    Toast.LENGTH_SHORT).show();
+            handleGithubAccessToken(mGithubAccessToken);
+
+           /* Intent repolist = new Intent(LoginActivity.this, RepoList.class);
+            repolist.putExtra("Url", mApp.getRepoUrl().substring(GithubApp.API_URL.length()+1,mApp.getRepoUrl().length()));
+            startActivity(repolist);
+            finish();*/
+        }
+
+        @Override
+        public void onFail(String error) {
+            Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
+        }
+    };
 }

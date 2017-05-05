@@ -38,6 +38,14 @@
                 android:layout_marginEnd="16dp"/>
 
 
+            <Button
+                android:id="@+id/btn_github"
+                android:layout_margin="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="GITHUB LOGIN"/>
+
+
         </LinearLayout>
 
 </layout>
